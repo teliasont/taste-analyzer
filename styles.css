@@ -51,13 +51,20 @@
   /* ── Font sizes (Major Third modular scale, ratio 1.25, base 1rem/16px) ──
      Each step = previous × 1.25. Use rem so sizes scale with the user's
      browser font-size preference rather than being locked to pixels.       */
-  --font-size-display: 3.05rem;  /* 48.8px — hero numbers, artist name splash  */
-  --font-size-h1:      2.44rem;  /* 39px   — page title, top-level heading      */
-  --font-size-h2:      1.95rem;  /* 31.2px — section heading (e.g. "Top Tracks")*/
-  --font-size-h3:      1.56rem;  /* 25px   — card title, sub-section label      */
-  --font-size-body:    1rem;     /* 16px   — all running body copy (base)       */
-  --font-size-small:   0.8rem;   /* 12.8px — secondary info: counts, dates      */
-  --font-size-caption: 0.64rem;  /* 10.2px — fine print, timestamps, tooltips   */
+  --text-display: 3.05rem;  /* 48.8px — largest hero text: splash stats, artist name */
+  --text-h1:      2.44rem;  /* 39px   — page titles                                  */
+  --text-h2:      1.95rem;  /* 31.2px — section headers (e.g. "Top Tracks")          */
+  --text-h3:      1.56rem;  /* 25px   — card titles, subsection headers               */
+  --text-body:    1rem;     /* 16px   — default reading size for all body copy        */
+  --text-small:   0.8rem;   /* 12.8px — labels, captions, metadata                   */
+  --text-caption: 0.64rem;  /* 10.2px — smallest legible size: timestamps, fine print */
+
+  /* ── Font weights ────────────────────────────────────────────────────────
+     Use named weights instead of raw numbers so intent is clear at a glance.
+     Check that the loaded font variants (see @import) support each weight.  */
+  --weight-normal: 400;  /* body copy, descriptions — the default reading weight */
+  --weight-medium: 500;  /* labels, UI controls — slightly heavier than body     */
+  --weight-bold:   700;  /* headings, emphasis — strong contrast against normal  */
 
   /* ── Spacing (base-4 scale, expressed in rem) ────────────────────────────
      Every step = 4 px (at default 16 px root font size).

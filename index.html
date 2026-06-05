@@ -18,8 +18,27 @@
     <!-- Main content area — user input and results will live here -->
     <main>
       <section id="input-section">
-        <!-- User input controls will go here -->
-        <p>Input section placeholder</p>
+        <h2>Add Your Songs</h2>
+
+        <!-- Counter — updated by script.js whenever the list changes -->
+        <p id="song-count"></p>
+
+        <!-- Input form — title, artist, and add button -->
+        <div id="song-form">
+          <label for="input-title">Song title</label>
+          <input type="text" id="input-title" placeholder="e.g. Bohemian Rhapsody" />
+
+          <label for="input-artist">Artist</label>
+          <input type="text" id="input-artist" placeholder="e.g. Queen" />
+
+          <button id="btn-add" type="button">Add Song</button>
+        </div>
+
+        <!-- Song list — emptied and rebuilt by renderList() on every change -->
+        <ul id="song-list"></ul>
+
+        <!-- Disabled until 6 songs are added; enabled state managed by script.js -->
+        <button id="btn-start" type="button" disabled>Start Analysis</button>
       </section>
 
       <section id="results-section">
