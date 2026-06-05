@@ -128,3 +128,67 @@ section {
   padding: var(--space-6);
   margin-bottom: var(--space-6);
 }
+
+/* ── Progress bar ───────────────────────────────────────────────────────────
+   The container is the track; the inner div grows from 0% to 100% as rounds
+   complete. overflow: hidden clips the fill to the rounded track corners. */
+#progress-bar-container {
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  height: var(--space-2);
+  overflow: hidden;
+  margin-bottom: var(--space-4);
+}
+
+#progress-bar {
+  background-color: var(--color-accent);
+  height: 100%;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+/* ── Song cards ─────────────────────────────────────────────────────────────
+   Side-by-side via flex. Each card is a <button> so the entire surface is
+   keyboard and pointer accessible with no extra JS. */
+#song-cards {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+.song-card {
+  flex: 1;
+  padding: var(--space-6);
+  background-color: var(--color-bg-secondary);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  color: var(--color-text);
+  transition: border-color 0.15s ease;
+}
+
+.song-card:not([disabled]):hover {
+  border-color: var(--color-accent);
+}
+
+.song-card:not([disabled]):active {
+  background-color: var(--color-accent-light);
+}
+
+.song-card[disabled] {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.card-title {
+  font-weight: var(--weight-bold);
+  margin-bottom: var(--space-1);
+}
+
+.card-artist {
+  color: var(--color-text-secondary);
+  font-size: var(--text-small);
+}

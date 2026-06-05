@@ -41,13 +41,43 @@
         <button id="btn-start" type="button" disabled>Start Analysis</button>
       </section>
 
-      <section id="results-section">
-        <!-- Comparison results will be displayed here -->
-        <p>Results section placeholder</p>
+      <!-- Comparison screen — hidden until Start is clicked -->
+      <section id="comparison-section" hidden>
+
+        <!-- Progress bar: the inner div's width grows as rounds complete -->
+        <div id="progress-bar-container">
+          <div id="progress-bar"></div>
+        </div>
+
+        <!-- Round counter: "Round X of Y" -->
+        <p id="round-counter"></p>
+
+        <!-- Question area: shows "Finding a connection..." during loading,
+             then the AI-generated question once the fetch completes -->
+        <div id="question-area">
+          <p id="question-text"></p>
+        </div>
+
+        <!-- Song cards: each is a <button> so the entire card is clickable.
+             Disabled during the loading state, enabled once the question arrives. -->
+        <div id="song-cards">
+          <button class="song-card" id="card-a" type="button" disabled>
+            <p class="card-title" id="card-a-title"></p>
+            <p class="card-artist" id="card-a-artist"></p>
+          </button>
+          <button class="song-card" id="card-b" type="button" disabled>
+            <p class="card-title" id="card-b-title"></p>
+            <p class="card-artist" id="card-b-artist"></p>
+          </button>
+        </div>
+
       </section>
     </main>
 
-    <!-- Our JavaScript — loaded at the bottom so the HTML is ready first -->
-    <script src="script.js"></script>
+    <!-- type="module" enables ES module imports (e.g. config.js).
+         Modules are deferred automatically, so the script still runs after
+         the HTML is parsed — same behaviour as before, no load-order change.
+         Note: modules require a real HTTP server; file:// won't work. -->
+    <script type="module" src="script.js"></script>
   </body>
 </html>

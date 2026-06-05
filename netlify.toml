@@ -1,0 +1,18 @@
+# netlify.toml — Netlify build and deployment configuration.
+#
+# Netlify reads this file from the repository root to understand how to build
+# and serve the project. For a plain static site with no build step, the only
+# things we need to declare are where the static files live and where the
+# serverless functions are.
+
+[build]
+  # publish: the directory Netlify serves as the static site.
+  # "." means the repository root itself — index.html, styles.css, script.js,
+  # etc. are all at the top level, so no separate output folder is needed.
+  publish = "."
+
+  # functions: where Netlify looks for serverless function files.
+  # Each .js file in this directory becomes a function reachable at
+  # /.netlify/functions/<filename> (without the .js extension).
+  # So netlify/functions/claude.js is available at /.netlify/functions/claude.
+  functions = "netlify/functions"
