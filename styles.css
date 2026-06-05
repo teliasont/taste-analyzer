@@ -1,0 +1,123 @@
+/* ── Google Fonts ────────────────────────────────────────────────────────────
+   Loads all three typefaces in one network request.
+   display=swap tells the browser to show a fallback font immediately while
+   the custom font downloads, preventing invisible text. */
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap');
+
+/* ── Design tokens ───────────────────────────────────────────────────────────
+   All variables live on :root so they are accessible from any selector.
+   Change a value here and it updates everywhere that variable is used. */
+:root {
+
+  /* ── Color: Primary (dark teal, #1A535C → hsl 188 56% 23%) ──────────────
+     Use for: main header background, primary buttons, key UI chrome.       */
+  --color-primary:       hsl(188, 56%, 23%); /* base dark teal              */
+  --color-primary-light: hsl(188, 56%, 38%); /* tint — hover states, badges */
+  --color-primary-dark:  hsl(188, 56%, 13%); /* shade — active/pressed states */
+
+  /* ── Color: Accent (bright teal, #4ECDC4 → hsl 176 56% 55%) ────────────
+     Use for: highlights, links, tags, interactive accents.                 */
+  --color-accent:        hsl(176, 56%, 55%); /* base bright teal            */
+  --color-accent-light:  hsl(176, 56%, 72%); /* tint — subtle backgrounds   */
+  --color-accent-dark:   hsl(176, 56%, 38%); /* shade — text on light bg    */
+
+  /* ── Color: Background (#F7F7F7 → hsl 0 0% 97%) ─────────────────────────
+     Use bg for the page canvas; bg-secondary for cards, sidebars, inputs.  */
+  --color-bg:            hsl(0, 0%, 97%);    /* near-white page background  */
+  --color-bg-secondary:  hsl(0, 0%, 92%);    /* slightly darker — surfaces  */
+
+  /* ── Color: Coral (#FF6B6B → hsl 0 100% 71%) ────────────────────────────
+     Use for: error states, warnings, destructive actions, alert badges.    */
+  --color-coral:         hsl(0, 100%, 71%);
+
+  /* ── Color: Yellow (#FFE66D → hsl 50 100% 71%) ──────────────────────────
+     Use for: highlights, "new" badges, rating stars, positive callouts.    */
+  --color-yellow:        hsl(50, 100%, 71%);
+
+  /* ── Color: Text (#070600 → hsl 51 100% 1%) ─────────────────────────────
+     Near-black with a faint warm undertone — softer than pure #000.
+     Secondary is a muted warm gray for captions, placeholders, meta info.  */
+  --color-text:           hsl(51, 100%,  1%); /* primary body text          */
+  --color-text-secondary: hsl(51,   8%, 42%); /* captions, labels, metadata */
+
+  /* ── Typography ─────────────────────────────────────────────────────────
+     font-heading: compressed grotesque — titles, section headers, stats.
+     font-body: humanist serif — readable body copy, descriptions.
+     font-mono: monospaced — track IDs, technical values, code snippets.   */
+  --font-heading: 'Barlow Condensed', sans-serif;
+  --font-body:    'Source Serif 4', Georgia, serif;
+  --font-mono:    'DM Mono', monospace;
+
+  /* ── Font sizes (Major Third modular scale, ratio 1.25, base 1rem/16px) ──
+     Each step = previous × 1.25. Use rem so sizes scale with the user's
+     browser font-size preference rather than being locked to pixels.       */
+  --font-size-display: 3.05rem;  /* 48.8px — hero numbers, artist name splash  */
+  --font-size-h1:      2.44rem;  /* 39px   — page title, top-level heading      */
+  --font-size-h2:      1.95rem;  /* 31.2px — section heading (e.g. "Top Tracks")*/
+  --font-size-h3:      1.56rem;  /* 25px   — card title, sub-section label      */
+  --font-size-body:    1rem;     /* 16px   — all running body copy (base)       */
+  --font-size-small:   0.8rem;   /* 12.8px — secondary info: counts, dates      */
+  --font-size-caption: 0.64rem;  /* 10.2px — fine print, timestamps, tooltips   */
+
+  /* ── Spacing (base-4 scale, expressed in rem) ────────────────────────────
+     Every step = 4 px (at default 16 px root font size).
+     Use lower steps for tight internal gaps, higher for section spacing.   */
+  --space-1: 0.25rem;  /*  4px — icon gap, tight inline spacing            */
+  --space-2: 0.5rem;   /*  8px — between label and input                   */
+  --space-3: 0.75rem;  /* 12px — compact list item padding                 */
+  --space-4: 1rem;     /* 16px — standard padding unit                     */
+  --space-5: 1.25rem;  /* 20px — slightly generous padding                 */
+  --space-6: 1.5rem;   /* 24px — card internal padding, paragraph gap      */
+  --space-7: 1.75rem;  /* 28px — medium section gap                        */
+  --space-8: 2rem;     /* 32px — large section gap, page margin             */
+
+  /* ── Border radius ───────────────────────────────────────────────────────
+     sm: chips, tags, small inputs.
+     md: cards, buttons, modals.
+     lg: bottom sheets, large feature panels.                               */
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg: 16px;
+}
+
+/* ── Reset ──────────────────────────────────────────────────────────────────
+   Browsers apply their own default margins/padding. This clears them so our
+   layout starts from a predictable baseline. */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* padding/border don't expand an element's size */
+}
+
+/* ── Body ───────────────────────────────────────────────────────────────────
+   Base font and background for the whole page. */
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────────
+   Top banner styling. */
+header {
+  background-color: var(--color-primary);
+  color: white;
+  padding: var(--space-4) var(--space-8);
+}
+
+/* ── Main content ───────────────────────────────────────────────────────────
+   Centers the content and limits how wide it can grow on large screens. */
+main {
+  max-width: 800px;
+  margin: var(--space-8) auto;
+  padding: 0 var(--space-4);
+}
+
+/* ── Sections ───────────────────────────────────────────────────────────────
+   Each section gets a white card-like box. */
+section {
+  background-color: white;
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+}
