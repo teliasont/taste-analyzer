@@ -106,7 +106,13 @@ exports.handler = async (event) => {
   // difference between a successful response and an API-level error (e.g. 401
   // invalid key, 429 rate limit). The frontend's existing error handling
   // already checks response.ok, so no changes needed there.
-  const data = await anthropicResponse.json();
+  // TEMPORARY — read as text first so we can log the exact bytes Anthropic sent
+  // before any parsing happens. Remove these two console.log lines once debugging is done.
+  const rawBody = await anthropicResponse.text();
+  console.log("Anthropic status:", anthropicResponse.status);
+  console.log("Anthropic raw body:", rawBody);
+
+  const data = JSON.parse(rawBody);
 
   return {
     statusCode: anthropicResponse.status,
