@@ -208,21 +208,43 @@ function showLoadingState() {
 // Falls back to a generic question if the fetch fails, so the user can still
 // step through all rounds without a hard error.
 async function fetchComparisonQuestion(songA, songB) {
-  const prompt = `You are helping someone explore their music taste by comparing pairs of songs.
+  const prompt = `You are helping a listener understand their own music taste through comparison. You have deep knowledge of music — not just genre, but emotional texture, structure, and what a song asks of its listener.
 
-Song A: "${songA.title}" by ${songA.artist}
-Song B: "${songB.title}" by ${songB.artist}
+You will receive two song titles and their artists.
 
-Write an insightful comparison question that helps the listener reflect on which song resonates with them more. The question should highlight a meaningful contrast or connection — not just "which do you like better?", but something that reveals *why* they might prefer one.
+Step 1: Identify one specific thing these two songs share beneath the surface. Not genre, not tempo, not mood labels — something specific about their emotional logic or what they demand from the listener. Do not use the title, subject matter, or literal content of either song. The connection must be specific enough that it could not describe most other songs — if it could, find a deeper one.
 
-Respond with JSON only, in exactly this format:
+Step 2: Using that shared quality, write a single comparison question. The situation in the question must be a direct consequence of the shared quality you identified — someone reading both fields should be able to see the connection clearly. Place the listener inside a specific physical situation that carries emotional stakes on its own — something is at risk, ending, beginning, or being decided in that moment. A neutral physical action with no stakes is not enough. Write in second person, present tense. Direct address only.
+
+Rules:
+- The question must begin with the word "Which"
+- Do not ask "which do you like more" directly
+- Do not reference genre, tempo, or release year
+- The question must feel like a choice between two experiences, not two ideas or abstract qualities
+- The situation must be physical and concrete — somewhere the listener can picture themselves standing, sitting, moving, or doing something
+- The situation must carry emotional stakes — not a neutral action, not a generic moment, not a metaphor
+- Do not use internal or psychological framing — no "the night you decide," no "when you finally realize," no emotional turning points described from the inside
+- Avoid vague placeholder language like "something," "the thing," or "it"
+- The question must be one sentence, maximum 25 words
+
+Example of correct output:
 {
-  "question": "your comparison question here",
-  "reasoning": "brief note on what makes this pairing interesting to compare"
+  "reasoning": "Both songs treat forward motion as the only honest response to something already lost.",
+  "question": "Which do you play driving away from a place you're never going back to?"
 }
-Return only raw JSON. Do not wrap the response in markdown code fences or backticks.
-`
-;
+
+Example of incorrect output (too psychological, not physical):
+{
+  "reasoning": "Both songs stage a moment of psychological rupture where the self must dismantle what it built.",
+  "question": "Which do you play the night you finally decide to burn down the version of yourself you built for someone else?"
+}
+
+Return a JSON object with two fields:
+- "reasoning": one specific sentence naming the shared quality — specific enough that it could not describe most other songs. No complex psychological framing, no vague generalities
+- "question": the comparison question only — must begin with "Which," the situation must carry emotional stakes, and it must visibly follow from the reasoning. No preamble, no setup, nothing before or after it
+
+Song A: ${songA.title} by ${songA.artist}
+Song B: ${songB.title} by ${songB.artist}`;
 
   try {
     const response = await fetch(CLAUDE_ENDPOINT, {
