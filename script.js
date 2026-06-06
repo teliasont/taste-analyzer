@@ -129,6 +129,16 @@ function updateStartButton() {
   btnStart.disabled = songs.length < MIN_SONGS;
 }
 
+// ── stripCodeFences ───────────────────────────────────────────────────────────
+// Removes markdown code fences that Claude sometimes wraps JSON responses in.
+// Handles both ```json ... ``` and plain ``` ... ``` wrappers. If neither is
+// present the original string is returned unchanged, so JSON.parse always gets
+// a clean string regardless of how Claude formatted its response.
+function stripCodeFences(text) {
+  const match = text.trim().match(/^```\w*\n([\s\S]*?)\n?```$/);
+  return match ? match[1] : text;
+}
+
 // ── shuffleArray ──────────────────────────────────────────────────────────────
 // Returns a new array in a random order (Fisher-Yates). The original is not
 // mutated — the caller owns the result.
@@ -209,7 +219,10 @@ Respond with JSON only, in exactly this format:
 {
   "question": "your comparison question here",
   "reasoning": "brief note on what makes this pairing interesting to compare"
-}`;
+}
+Return only raw JSON. Do not wrap the response in markdown code fences or backticks.
+`
+;
 
   try {
     const response = await fetch(CLAUDE_ENDPOINT, {
@@ -231,7 +244,7 @@ Respond with JSON only, in exactly this format:
     }
 
     const data   = await response.json();
-    const text   = data.content[0].text;
+    const text   = stripCodeFences(data.content[0].text);
     const parsed = JSON.parse(text);
 
     pendingReasoning = parsed.reasoning || "";
