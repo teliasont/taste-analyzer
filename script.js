@@ -406,7 +406,11 @@ async function fetchReflection() {
   const prompt = `You have observed a listener choose between song pairs. Here are their choices and the quality each pair shared:
 ${choiceLines}
 
-Write a 3 sentence reflection for this listener. Be direct and specific — name actual qualities you notice in the music they chose: energy levels, sonic texture, lyrical approach, emotional register, tempo, genre tendencies, or structural patterns where relevant. Say what their choices suggest about how they actually use music in their life — not poetically, but practically and specifically. Avoid abstract language, literary metaphors, and phrases like "sit with discomfort," "keep honest company," or "fuel or release." Do not use flowery or poetic language. Write directly to the listener in second person, present tense. Prose only, no formatting.`;
+Write a 3 sentence reflection for this listener. Be direct and specific — name actual qualities you notice in the music they chose: energy levels, sonic texture, lyrical approach, emotional register, tempo, genre tendencies, or structural patterns where relevant. Say what their choices suggest about how they actually use music in their life — not poetically, but practically and specifically.
+
+Do not use: abstract language, literary metaphors, phrases like "sit with discomfort," "keep honest company," "fuel or release," "the withholding is the point," "tension becomes meaning," "make the waiting feel necessary," "almost said," "almost resolved," or any variation of these constructions. Do not personify the songs. Do not write literary analysis. Do not write about what the songs "ask of" the listener. Write observations about listening behavior — what kinds of songs they pick, what those songs share sonically or structurally, and what that pattern suggests about when and how they listen.
+
+Write directly to the listener in second person, present tense. Prose only, no formatting.`;
 
   try {
     const response = await fetch(CLAUDE_ENDPOINT, {
