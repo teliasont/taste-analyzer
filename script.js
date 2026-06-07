@@ -200,8 +200,11 @@ function shuffleArray(array) {
 // Called when the user clicks Start. Sets up comparison state, navigates to
 // the comparison screen, and fires the first round.
 function startComparison() {
-  shuffledSongs  = shuffleArray(songs);
-  totalRounds    = Math.floor(shuffledSongs.length / 2);
+  shuffledSongs = shuffleArray(songs);
+  // An odd-length list can't be fully paired. Drop the last song silently so
+  // every round has exactly two songs and totalRounds is always a whole number.
+  if (shuffledSongs.length % 2 !== 0) shuffledSongs.pop();
+  totalRounds    = shuffledSongs.length / 2;
   currentRound   = 0;
   results        = [];
   btnUndo.hidden = true; // hidden until the first choice is recorded
@@ -360,7 +363,7 @@ function handleCardChoice(chosen, notChosen) {
 function handleUndo() {
   results.pop();
   currentRound--;
-  btnUndo.hidden = results.length === 0; // hide again if we're back to the start
+  btnUndo.hidden = currentRound === 0; // hide once we're back before any choice was made
   loadNextRound();
 }
 

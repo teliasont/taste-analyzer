@@ -430,7 +430,6 @@ section {
 /* Cream background mirrors the input screen. Centered text for the reflection. */
 #results-section {
   background-color: var(--color-cream);
-  text-align: center;
   margin-top: var(--space-8);
 }
 
@@ -451,7 +450,7 @@ section {
   font-family: var(--font-body);
   font-size: var(--text-h3);
   color: var(--color-green);
-  line-height: 1.8;
+  line-height: 1.5;
   margin-bottom: var(--space-8);
 }
 
@@ -469,6 +468,7 @@ section {
   letter-spacing: 0.1em;
   padding: var(--space-4);
   cursor: pointer;
+  text-align: center;
 }
 
 #btn-restart:hover {
