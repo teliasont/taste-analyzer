@@ -448,7 +448,7 @@ section {
    The most significant text in the app — treated with scale and space. */
 #reflection-text {
   font-family: var(--font-body);
-  font-size: var(--text-h3);
+  font-size: var(--text-body);
   color: var(--color-green);
   line-height: 1.5;
   margin-bottom: var(--space-8);

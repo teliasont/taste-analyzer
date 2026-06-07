@@ -357,14 +357,37 @@ function handleCardChoice(chosen, notChosen) {
 }
 
 // ── handleUndo ────────────────────────────────────────────────────────────────
-// Removes the last recorded choice, steps back one round, and re-fetches the
-// AI question for that pairing. loadNextRound increments currentRound before
-// using it, so we decrement here so the ++ lands us back on the same round.
+// Steps back one round: removes the last choice, restores the previous pair,
+// and fetches a fresh question for it. loadNextRound() is intentionally NOT
+// called here — it would increment currentRound again, landing on the wrong pair.
+// Instead this function manually restores all state that loadNextRound would set,
+// then calls fetchComparisonQuestion directly.
 function handleUndo() {
-  results.pop();
-  currentRound--;
-  btnUndo.hidden = currentRound === 0; // hide once we're back before any choice was made
-  loadNextRound();
+  results.pop();                                    // 1. remove the last choice
+  currentRound--;                                   // 2. step back one round
+
+  btnUndo.hidden = currentRound === 0;              // 3. hide if nothing left to undo
+
+  // 4. currentRound is now the 1-indexed round we want to show again.
+  //    Because it's already decremented, the pair index is currentRound * 2 - 2,
+  //    which simplifies to (currentRound - 1) * 2 — but written directly:
+  const pairIndex = (currentRound - 1) * 2;
+  currentPairA = shuffledSongs[pairIndex];
+  currentPairB = shuffledSongs[pairIndex + 1];
+
+  // Restore the card labels to the reverted pair.
+  cardATitle.textContent  = currentPairA.title;
+  cardAArtist.textContent = currentPairA.artist;
+  cardBTitle.textContent  = currentPairB.title;
+  cardBArtist.textContent = currentPairB.artist;
+
+  // Rewind the progress bar to reflect the number of completed rounds.
+  progressBar.style.width = `${((currentRound - 1) / totalRounds) * 100}%`;
+
+  roundCounter.textContent = `Round ${currentRound} of ${totalRounds}`;  // 5. update counter
+
+  showLoadingState();                               // disable cards while fetching
+  fetchComparisonQuestion(currentPairA, currentPairB); // 6. fresh question for this pair
 }
 
 // ── fetchReflection ───────────────────────────────────────────────────────────
