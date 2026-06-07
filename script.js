@@ -50,6 +50,13 @@ const cardAArtist  = document.getElementById("card-a-artist");
 const cardB        = document.getElementById("card-b");
 const cardBTitle   = document.getElementById("card-b-title");
 const cardBArtist  = document.getElementById("card-b-artist");
+const btnUndo      = document.getElementById("btn-undo");
+
+// Results screen elements
+const resultsSection   = document.getElementById("results-section");
+const reflectionStatus = document.getElementById("reflection-status");
+const reflectionText   = document.getElementById("reflection-text");
+const btnRestart       = document.getElementById("btn-restart");
 
 // ── addSong ───────────────────────────────────────────────────────────────────
 // Reads both input fields, rejects empty values, pushes a new {title, artist}
@@ -139,6 +146,37 @@ function stripCodeFences(text) {
   return match ? match[1] : text;
 }
 
+// ── applyScreen ──────────────────────────────────────────────────────────────
+// Shows exactly one screen and hides the other two. Called both by the
+// navigation functions below and by handleHashChange. Keeping visibility logic
+// in one place means there is no way for sections to get out of sync.
+function applyScreen(screen) {
+  inputSection.hidden      = screen !== 'input';
+  comparisonSection.hidden = screen !== 'compare';
+  resultsSection.hidden    = screen !== 'results';
+}
+
+// ── handleHashChange ──────────────────────────────────────────────────────────
+// Fires when the URL hash changes via the browser's back/forward buttons, or
+// on the initial page load (called manually from init). Validates that the
+// required state exists before showing a screen — if the user bookmarks
+// #compare and reloads, the comparison state is gone, so we redirect to #input.
+function handleHashChange() {
+  const screen = window.location.hash.slice(1); // strip the leading '#'
+
+  if (screen === 'compare' && shuffledSongs.length > 0) {
+    applyScreen('compare');
+  } else if (screen === 'results' && results.length > 0) {
+    applyScreen('results');
+  } else {
+    applyScreen('input');
+    // Replace the unresolvable hash so the back button doesn't loop to it.
+    if (screen && screen !== 'input') {
+      history.replaceState(null, '', '#input');
+    }
+  }
+}
+
 // ── shuffleArray ──────────────────────────────────────────────────────────────
 // Returns a new array in a random order (Fisher-Yates). The original is not
 // mutated — the caller owns the result.
@@ -152,16 +190,17 @@ function shuffleArray(array) {
 }
 
 // ── startComparison ───────────────────────────────────────────────────────────
-// Called when the user clicks Start. Hides the input screen, shows the
-// comparison screen, and fires the first round.
+// Called when the user clicks Start. Sets up comparison state, navigates to
+// the comparison screen, and fires the first round.
 function startComparison() {
-  shuffledSongs = shuffleArray(songs);
-  totalRounds   = Math.floor(shuffledSongs.length / 2);
-  currentRound  = 0;
-  results       = [];
+  shuffledSongs  = shuffleArray(songs);
+  totalRounds    = Math.floor(shuffledSongs.length / 2);
+  currentRound   = 0;
+  results        = [];
+  btnUndo.hidden = true; // hidden until the first choice is recorded
 
-  inputSection.hidden      = true;
-  comparisonSection.hidden = false;
+  applyScreen('compare');
+  window.location.hash = 'compare';
 
   loadNextRound();
 }
@@ -289,30 +328,106 @@ function displayQuestion(question) {
 }
 
 // ── handleCardChoice ──────────────────────────────────────────────────────────
-// Records the user's choice, then either loads the next round or ends the
-// analysis if all rounds are complete.
+// Records the user's choice. Shows the undo button after the first choice.
+// Either loads the next round or navigates to the results screen when done.
 function handleCardChoice(chosen, notChosen) {
   results.push({ chosen, notChosen, reasoning: pendingReasoning });
+  btnUndo.hidden = false; // reveal after the first choice is recorded
 
   if (currentRound < totalRounds) {
     loadNextRound();
   } else {
-    // All rounds done — fill progress bar and show a completion message.
     progressBar.style.width = "100%";
-    questionText.textContent = "Analysis complete!";
-    cardA.disabled = true;
-    cardB.disabled = true;
+    btnUndo.hidden = true; // undo doesn't make sense once we leave the comparison screen
 
-    console.log("Taste analysis results:", results);
+    applyScreen('results');
+    window.location.hash = 'results';
+    fetchReflection();
   }
+}
+
+// ── handleUndo ────────────────────────────────────────────────────────────────
+// Removes the last recorded choice, steps back one round, and re-fetches the
+// AI question for that pairing. loadNextRound increments currentRound before
+// using it, so we decrement here so the ++ lands us back on the same round.
+function handleUndo() {
+  results.pop();
+  currentRound--;
+  btnUndo.hidden = results.length === 0; // hide again if we're back to the start
+  loadNextRound();
+}
+
+// ── fetchReflection ───────────────────────────────────────────────────────────
+// Sends all of the listener's choices to Claude and asks for a personal
+// reflection on what the pattern reveals about their taste. The response is
+// plain prose, not JSON — no parsing needed beyond extracting the text field.
+async function fetchReflection() {
+  const choiceLines = results.map((r, i) => {
+    const shared = r.reasoning ? ` Shared quality: ${r.reasoning}` : '';
+    return `Round ${i + 1}: Chose "${r.chosen.title}" by ${r.chosen.artist} over "${r.notChosen.title}" by ${r.notChosen.artist}.${shared}`;
+  }).join('\n');
+
+  const prompt = `You have observed a listener choose between song pairs. Here are their choices and the quality each pair shared:
+
+${choiceLines}
+
+Write a 3–4 sentence personal reflection for this listener. Identify qualities that recur across multiple choices. Be specific about what their choices reveal — not just that they have preferences, but what kind of music asks something of them that they're willing to give. Write directly to the listener in second person, present tense. Prose only — no headers, no lists, no formatting.`;
+
+  try {
+    const response = await fetch(CLAUDE_ENDPOINT, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        model:      MODEL,
+        max_tokens: 400,
+        messages:   [{ role: "user", content: prompt }],
+      }),
+    });
+
+    if (!response.ok) throw new Error(`Status ${response.status}`);
+
+    const data = await response.json();
+    showReflection(data.content[0].text.trim());
+
+  } catch (error) {
+    console.error("Could not fetch reflection:", error);
+    showReflection("Your choices trace a pattern — even if it's hard to name right now. Come back and listen again.");
+  }
+}
+
+// ── showReflection ────────────────────────────────────────────────────────────
+// Swaps the loading indicator for the finished reflection text.
+function showReflection(text) {
+  reflectionStatus.hidden    = true;
+  reflectionText.textContent = text;
+  reflectionText.hidden      = false;
+}
+
+// ── restartApp ────────────────────────────────────────────────────────────────
+// Resets all comparison and results state and returns to the input screen.
+// The song list is preserved so the user doesn't have to re-enter everything.
+function restartApp() {
+  shuffledSongs    = [];
+  currentRound     = 0;
+  totalRounds      = 0;
+  results          = [];
+  currentPairA     = null;
+  currentPairB     = null;
+  pendingReasoning = "";
+
+  btnUndo.hidden             = true;
+  reflectionStatus.hidden    = false;  // reset for the next run
+  reflectionText.hidden      = true;
+  reflectionText.textContent = "";
+
+  applyScreen('input');
+  window.location.hash = 'input';
 }
 
 // ── init ─────────────────────────────────────────────────────────────────────
 // Wires up all event listeners and does the first render to populate the
 // counter. Called once immediately when the script loads.
 function init() {
-  console.log("Music Taste Analyzer loaded.");
-
   btnAdd.addEventListener("click", addSong);
 
   // Let the user press Enter from either field instead of clicking Add,
@@ -325,6 +440,17 @@ function init() {
   // Each card passes itself as `chosen` and the other as `notChosen`.
   cardA.addEventListener("click", () => handleCardChoice(currentPairA, currentPairB));
   cardB.addEventListener("click", () => handleCardChoice(currentPairB, currentPairA));
+
+  btnUndo.addEventListener("click", handleUndo);
+  btnRestart.addEventListener("click", restartApp);
+
+  // hashchange fires when the user navigates with the browser's back/forward
+  // buttons. We use it to keep the visible screen in sync with the URL hash.
+  window.addEventListener("hashchange", handleHashChange);
+
+  // On page load, respect any hash already in the URL — handles direct links
+  // like mysite.com/#input and redirects invalid hashes back to #input.
+  handleHashChange();
 
   renderList(); // sets counter text and disables Start on first load
 }

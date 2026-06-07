@@ -71,6 +71,23 @@
           </button>
         </div>
 
+        <!-- Undo button — hidden until the first choice is recorded.
+             Lets the user replay the previous pairing with a fresh AI question. -->
+        <button id="btn-undo" type="button" hidden>&#8592; Undo last choice</button>
+
+      </section>
+
+      <!-- Results screen — hidden until all comparison rounds are complete -->
+      <section id="results-section" hidden>
+
+        <!-- Shown while the reflection is being generated, swapped out when done -->
+        <p id="reflection-status">Reading your choices...</p>
+
+        <!-- The AI-generated reflection; hidden until the fetch completes -->
+        <p id="reflection-text" hidden></p>
+
+        <button id="btn-restart" type="button">Start Over</button>
+
       </section>
     </main>
 
