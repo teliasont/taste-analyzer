@@ -1,220 +1,497 @@
 /* ── Google Fonts ────────────────────────────────────────────────────────────
-   Loads all three typefaces in one network request.
-   display=swap tells the browser to show a fallback font immediately while
-   the custom font downloads, preventing invisible text. */
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap');
+   Barlow Condensed: compressed grotesque — headings, buttons, labels, all caps.
+   Source Serif 4: humanist serif — body copy, question text, reflection prose.
+   DM Mono removed; no monospaced type in the new design. */
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&display=swap');
 
 /* ── Design tokens ───────────────────────────────────────────────────────────
-   All variables live on :root so they are accessible from any selector.
-   Change a value here and it updates everywhere that variable is used. */
+   New palette and typography variables. Previous --color-primary/accent/bg
+   values removed entirely; everything uses the five named colors below. */
 :root {
 
-  /* ── Color: Primary (dark teal, #1A535C → hsl 188 56% 23%) ──────────────
-     Use for: main header background, primary buttons, key UI chrome.       */
-  --color-primary:       hsl(188, 56%, 23%); /* base dark teal              */
-  --color-primary-light: hsl(188, 56%, 38%); /* tint — hover states, badges */
-  --color-primary-dark:  hsl(188, 56%, 13%); /* shade — active/pressed states */
+  /* ── Color ───────────────────────────────────────────────────────────────── */
+  --color-cream:      #F5F0E8;
+  --color-green:      #1A3D2B;
+  --color-coral:      #FF6B6B;
+  --color-terracotta: #C4622D;
+  --color-marigold:   #D4A843;
+  --color-black:      #0D0D0D;
 
-  /* ── Color: Accent (bright teal, #4ECDC4 → hsl 176 56% 55%) ────────────
-     Use for: highlights, links, tags, interactive accents.                 */
-  --color-accent:        hsl(176, 56%, 55%); /* base bright teal            */
-  --color-accent-light:  hsl(176, 56%, 72%); /* tint — subtle backgrounds   */
-  --color-accent-dark:   hsl(176, 56%, 38%); /* shade — text on light bg    */
-
-  /* ── Color: Background (#F7F7F7 → hsl 0 0% 97%) ─────────────────────────
-     Use bg for the page canvas; bg-secondary for cards, sidebars, inputs.  */
-  --color-bg:            hsl(0, 0%, 97%);    /* near-white page background  */
-  --color-bg-secondary:  hsl(0, 0%, 92%);    /* slightly darker — surfaces  */
-
-  /* ── Color: Coral (#FF6B6B → hsl 0 100% 71%) ────────────────────────────
-     Use for: error states, warnings, destructive actions, alert badges.    */
-  --color-coral:         hsl(0, 100%, 71%);
-
-  /* ── Color: Yellow (#FFE66D → hsl 50 100% 71%) ──────────────────────────
-     Use for: highlights, "new" badges, rating stars, positive callouts.    */
-  --color-yellow:        hsl(50, 100%, 71%);
-
-  /* ── Color: Text (#070600 → hsl 51 100% 1%) ─────────────────────────────
-     Near-black with a faint warm undertone — softer than pure #000.
-     Secondary is a muted warm gray for captions, placeholders, meta info.  */
-  --color-text:           hsl(51, 100%,  1%); /* primary body text          */
-  --color-text-secondary: hsl(51,   8%, 42%); /* captions, labels, metadata */
-
-  /* ── Typography ─────────────────────────────────────────────────────────
-     font-heading: compressed grotesque — titles, section headers, stats.
-     font-body: humanist serif — readable body copy, descriptions.
-     font-mono: monospaced — track IDs, technical values, code snippets.   */
+  /* ── Typography ──────────────────────────────────────────────────────────── */
   --font-heading: 'Barlow Condensed', sans-serif;
   --font-body:    'Source Serif 4', Georgia, serif;
-  --font-mono:    'DM Mono', monospace;
 
-  /* ── Font sizes (Major Third modular scale, ratio 1.25, base 1rem/16px) ──
-     Each step = previous × 1.25. Use rem so sizes scale with the user's
-     browser font-size preference rather than being locked to pixels.       */
-  --text-display: 3.05rem;  /* 48.8px — largest hero text: splash stats, artist name */
-  --text-h1:      2.44rem;  /* 39px   — page titles                                  */
-  --text-h2:      1.95rem;  /* 31.2px — section headers (e.g. "Top Tracks")          */
-  --text-h3:      1.56rem;  /* 25px   — card titles, subsection headers               */
-  --text-body:    1rem;     /* 16px   — default reading size for all body copy        */
-  --text-small:   0.8rem;   /* 12.8px — labels, captions, metadata                   */
-  --text-caption: 0.64rem;  /* 10.2px — smallest legible size: timestamps, fine print */
+  /* ── Font sizes (Major Third scale, base 1rem = 16px) ───────────────────── */
+  --text-display: 3.05rem;
+  --text-h1:      2.44rem;
+  --text-h2:      1.95rem;
+  --text-h3:      1.56rem;
+  --text-body:    1rem;
+  --text-small:   0.8rem;
+  --text-caption: 0.64rem;
 
-  /* ── Font weights ────────────────────────────────────────────────────────
-     Use named weights instead of raw numbers so intent is clear at a glance.
-     Check that the loaded font variants (see @import) support each weight.  */
-  --weight-normal: 400;  /* body copy, descriptions — the default reading weight */
-  --weight-medium: 500;  /* labels, UI controls — slightly heavier than body     */
-  --weight-bold:   700;  /* headings, emphasis — strong contrast against normal  */
+  /* ── Font weights ────────────────────────────────────────────────────────── */
+  --weight-normal: 400;
+  --weight-bold:   700;
 
-  /* ── Spacing (base-4 scale, expressed in rem) ────────────────────────────
-     Every step = 4 px (at default 16 px root font size).
-     Use lower steps for tight internal gaps, higher for section spacing.   */
-  --space-1: 0.25rem;  /*  4px — icon gap, tight inline spacing            */
-  --space-2: 0.5rem;   /*  8px — between label and input                   */
-  --space-3: 0.75rem;  /* 12px — compact list item padding                 */
-  --space-4: 1rem;     /* 16px — standard padding unit                     */
-  --space-5: 1.25rem;  /* 20px — slightly generous padding                 */
-  --space-6: 1.5rem;   /* 24px — card internal padding, paragraph gap      */
-  --space-7: 1.75rem;  /* 28px — medium section gap                        */
-  --space-8: 2rem;     /* 32px — large section gap, page margin             */
-
-  /* ── Border radius ───────────────────────────────────────────────────────
-     sm: chips, tags, small inputs.
-     md: cards, buttons, modals.
-     lg: bottom sheets, large feature panels.                               */
-  --radius-sm:  4px;
-  --radius-md:  8px;
-  --radius-lg: 16px;
+  /* ── Spacing (base-4 scale, rem) ─────────────────────────────────────────── */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 1.75rem;
+  --space-8: 2rem;
 }
 
-/* ── Reset ──────────────────────────────────────────────────────────────────
-   Browsers apply their own default margins/padding. This clears them so our
-   layout starts from a predictable baseline. */
+/* ── Reset ───────────────────────────────────────────────────────────────────
+   Clear browser default margins and padding. box-sizing: border-box means
+   padding and border are included in element dimensions, not added on top. */
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box; /* padding/border don't expand an element's size */
+  box-sizing: border-box;
 }
 
-/* ── Body ───────────────────────────────────────────────────────────────────
-   Base font and background for the whole page. */
+/* ── Body ────────────────────────────────────────────────────────────────────
+   Cream page background and green text are the defaults. The comparison
+   section overrides both at the section level. No border radius anywhere. */
 body {
   font-family: var(--font-body);
-  background-color: var(--color-bg);
-  color: var(--color-text);
+  background-color: var(--color-cream);
+  color: var(--color-green);
 }
 
-/* ── Header ─────────────────────────────────────────────────────────────────
-   Top banner styling. */
+/* ── Header ──────────────────────────────────────────────────────────────────
+   Full-width green bar. Sharp corners — no border radius. */
 header {
-  background-color: var(--color-primary);
-  color: white;
+  background-color: var(--color-green);
+  color: var(--color-cream);
   padding: var(--space-4) var(--space-8);
 }
 
-/* ── Main content ───────────────────────────────────────────────────────────
-   Centers the content and limits how wide it can grow on large screens. */
+/* App name in compressed grotesque, all caps. */
+header h1 {
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-h2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Main layout ─────────────────────────────────────────────────────────────
+   Centered column, max 800px, with horizontal gutter. */
 main {
   max-width: 800px;
   margin: var(--space-8) auto;
   padding: 0 var(--space-4);
 }
 
-/* ── Sections ───────────────────────────────────────────────────────────────
-   Each section gets a white card-like box. */
+/* ── Section base ────────────────────────────────────────────────────────────
+   Shared padding and bottom margin. No background here — each screen sets its
+   own. No border radius. */
 section {
-  background-color: white;
-  border-radius: var(--radius-md);
   padding: var(--space-6);
   margin-bottom: var(--space-6);
 }
 
-/* ── Progress bar ───────────────────────────────────────────────────────────
-   The container is the track; the inner div grows from 0% to 100% as rounds
-   complete. overflow: hidden clips the fill to the rounded track corners. */
-#progress-bar-container {
-  background-color: var(--color-bg-secondary);
-  border-radius: var(--radius-sm);
-  height: var(--space-2);
-  overflow: hidden;
+
+/* ════════════════════════════════════════════════════════════════════════════
+   INPUT SCREEN
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Cream background blends with the page — no card border or shadow. */
+#input-section {
+  background-color: var(--color-cream);
+}
+
+/* "Add Your Songs" — large compressed heading, green, all caps. */
+#input-section h2 {
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-h1);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-green);
+  margin-bottom: var(--space-6);
+}
+
+/* Song count line — small, muted, uppercase. Gives progress feedback. */
+#song-count {
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-small);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.6;
   margin-bottom: var(--space-4);
 }
 
+/* Flex column so gap controls all spacing between labels, inputs, and button. */
+#song-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+/* Field labels: small Barlow all caps. */
+#song-form label {
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-small);
+  /* text-transform: uppercase; */
+  letter-spacing: 0.1em;
+}
+
+/* Inputs: cream background, 2.5px solid green border, Barlow all caps.
+   No border radius. Outline replaced by border thickening on focus. */
+#song-form input {
+  width: 100%;
+  background-color: var(--color-cream);
+  border: 2.5px solid var(--color-green);
+  color: var(--color-green);
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-body);
+  /* text-transform: uppercase; */
+  letter-spacing: 0.05em;
+  padding: var(--space-3) var(--space-4);
+  outline: none;
+}
+
+/* Placeholder: same green, reduced opacity to read as inactive. */
+#song-form input::placeholder {
+  color: var(--color-green);
+  opacity: 0.35;
+}
+
+/* Focus: thicker border instead of a browser outline ring. */
+#song-form input:focus {
+  border-width: 3.5px;
+}
+
+/* Add Song: full-width green fill, cream text, Barlow all caps. No border radius. */
+#btn-add {
+  width: 100%;
+  background-color: var(--color-green);
+  color: var(--color-cream);
+  border: none;
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-body);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+}
+
+#btn-add:hover {
+  opacity: 0.85;
+}
+
+/* "Your List" label — small Barlow all caps with a full-width green rule beneath.
+   The border-bottom acts as a section divider between form and list. */
+#list-label {
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-small);
+  /* text-transform: uppercase; */
+  letter-spacing: 0.12em;
+  padding-bottom: var(--space-2);
+  border-bottom: 2.5px solid var(--color-green);
+  margin-bottom: var(--space-3);
+}
+
+/* Song list — no bullets, items stacked. */
+#song-list {
+  list-style: none;
+  margin-bottom: var(--space-6);
+}
+
+/* List items: cream fill, 2.5px green border, Barlow all caps.
+   Flex row keeps the × button flush right. No border radius. */
+#song-list li {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  background-color: var(--color-cream);
+  border: 2.5px solid var(--color-green);
+  color: var(--color-green);
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-body);
+  /* text-transform: uppercase; */
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-3);
+}
+
+
+
+/* Song title text — padded inside the flex item. */
+#song-list li span,
+#song-list li > :not(button) {
+  padding: var(--space-3) var(--space-4);
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+/* × remove button: green fill, cream ×, flush right, full height of the item.
+   No border radius — keeps the sharp edges of the parent item. */
+#song-list li button {
+  background-color: var(--color-green);
+  color: var(--color-cream);
+  border: none;
+  border-left: 2.5px solid var(--color-green);
+  font-family: var(--font-heading);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-bold);
+  line-height: 1;
+  padding: 0 var(--space-4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+ 
+}
+
+#song-list li button:hover {
+  opacity: 0.75;
+}
+
+/* Start Analysis: full-width coral fill, cream text, Barlow all caps.
+   Disabled state uses terracotta — warmer and more intentional than grey. */
+#btn-start {
+  width: 100%;
+  background-color: var(--color-coral);
+  color: var(--color-cream);
+  border: none;
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-h3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: var(--space-4);
+  cursor: pointer;
+}
+
+#btn-start:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+/* Terracotta at reduced opacity signals "available but not yet unlocked". */
+#btn-start:disabled {
+  background-color: var(--color-terracotta);
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPARISON SCREEN
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Dark green — the only screen that breaks from the cream page.
+   padding-top: 0 so the progress bar sits flush against the top edge. */
+#comparison-section {
+  background-color: var(--color-green);
+  padding-top: var(--space-6);
+}
+
+/* Progress bar track: full-bleed by counteracting the section's horizontal
+   padding with negative margins. Low-opacity cream on green. No border radius. */
+#progress-bar-container {
+  background-color: rgba(245, 240, 232, 0.2);
+  height: 3px;
+  margin-left:  calc(-1 * var(--space-6));
+  margin-right: calc(-1 * var(--space-6));
+  margin-bottom: var(--space-6);
+  overflow: hidden;
+}
+
+/* Progress fill: coral. Width animated by JS. No border radius. */
 #progress-bar {
-  background-color: var(--color-accent);
+  background-color: var(--color-coral);
   height: 100%;
   width: 0%;
   transition: width 0.3s ease;
 }
 
-/* ── Song cards ─────────────────────────────────────────────────────────────
-   Side-by-side via flex. Each card is a <button> so the entire surface is
-   keyboard and pointer accessible with no extra JS. */
+/* Round counter: small Barlow all caps, cream, muted — sits above the question. */
+#round-counter {
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-small);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-cream);
+  opacity: 0.6;
+  margin-bottom: var(--space-4);
+}
+
+/* Question box: 2px cream border, green interior (matches section bg), generous
+   padding. Source Serif 4 for the question text. No border radius. */
+#question-area {
+  border: 2px solid var(--color-cream);
+  padding: var(--space-6);
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+/* Question text: large serif in cream. The primary content of each round. */
+#question-text {
+  font-family: var(--font-body);
+  font-size: var(--text-h3);
+  color: var(--color-cream);
+  line-height: 1.5;
+}
+
+/* Cards row: side by side with a gap. */
 #song-cards {
   display: flex;
   gap: var(--space-4);
-  margin-top: var(--space-6);
 }
 
+/* Song card: cream fill, tall, no border, no border radius.
+   Content sits at the bottom-left via flex-direction: column + justify-content: flex-end. */
 .song-card {
   flex: 1;
+  min-height: 12rem;
+  background-color: var(--color-cream);
   padding: var(--space-6);
-  background-color: var(--color-bg-secondary);
-  border: 2px solid transparent;
-  border-radius: var(--radius-md);
-  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
   text-align: left;
-  font-family: var(--font-body);
-  font-size: var(--text-body);
-  color: var(--color-text);
-  transition: border-color 0.15s ease;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.12s ease;
 }
 
 .song-card:not([disabled]):hover {
-  border-color: var(--color-accent);
+  opacity: 0.88;
 }
 
 .song-card:not([disabled]):active {
-  background-color: var(--color-accent-light);
+  opacity: 0.72;
 }
 
+/* Disabled during loading — opacity signals unavailability without hiding the cards. */
 .song-card[disabled] {
   cursor: default;
   opacity: 0.5;
 }
 
+/* Card title: large Barlow all caps in green. */
 .card-title {
+  font-family: var(--font-heading);
   font-weight: var(--weight-bold);
+  font-size: var(--text-h3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-green);
   margin-bottom: var(--space-1);
 }
 
+/* Card artist: Source Serif 4 body text, slightly muted. */
 .card-artist {
-  color: var(--color-text-secondary);
-  font-size: var(--text-small);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  color: var(--color-green);
+  opacity: 0.6;
 }
 
-/* ── Undo button ─────────────────────────────────────────────────────────────
-   Secondary action — rendered as a plain text link so it doesn't compete
-   visually with the two song cards above it. */
+/* Undo button: plain cream text, no fill, no border — lowest visual priority.
+   Centered below the cards. */
 #btn-undo {
   display: block;
-  margin-top: var(--space-4);
+  margin: var(--space-8) auto 0;
   background: none;
   border: none;
   padding: 0;
-  color: var(--color-text-secondary);
+  color: var(--color-cream);
   font-family: var(--font-body);
   font-size: var(--text-small);
+  opacity: 0.5;
   cursor: pointer;
 }
 
 #btn-undo:hover {
-  color: var(--color-text);
+  opacity: 1;
 }
 
-/* ── Reflection text ─────────────────────────────────────────────────────────
-   The AI-generated prose paragraph on the results screen. */
+
+/* ════════════════════════════════════════════════════════════════════════════
+   RESULTS SCREEN
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Cream background mirrors the input screen. Centered text for the reflection. */
+#results-section {
+  background-color: var(--color-cream);
+  text-align: center;
+  margin-top: var(--space-8);
+}
+
+/* Loading state: Barlow all caps, green, centered. */
+#reflection-status {
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-body);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-green);
+  padding: var(--space-6) 0;
+}
+
+/* Reflection prose: large Source Serif 4, generous line height.
+   The most significant text in the app — treated with scale and space. */
 #reflection-text {
-  line-height: 1.7;
-  margin-bottom: var(--space-6);
+  font-family: var(--font-body);
+  font-size: var(--text-h3);
+  color: var(--color-green);
+  line-height: 1.8;
+  margin-bottom: var(--space-8);
+}
+
+/* Start Over: full-width green fill, cream text, Barlow all caps. No border radius. */
+#btn-restart {
+  margin-top: var(--space-8);
+  width: 100%;
+  background-color: var(--color-green);
+  color: var(--color-cream);
+  border: none;
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-body);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: var(--space-4);
+  cursor: pointer;
+}
+
+#btn-restart:hover {
+  opacity: 0.85;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPARISON MODE — BODY & HEADER OVERRIDES
+   Applied by toggling .comparing on <body> inside applyScreen(). Removed
+   when navigating to any other screen, so input and results always revert
+   to cream/green. Using a body class means a single CSS rule paints the
+   entire viewport, including any area below the section.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Full viewport turns dark green when comparing. */
+body.comparing {
+  background-color: var(--color-green);
+}
+
+/* Header inverts: cream background, green text. The h1 inherits color from
+   the header element, so no separate rule is needed for it. */
+body.comparing header {
+  background-color: var(--color-cream);
+  color: var(--color-green);
 }

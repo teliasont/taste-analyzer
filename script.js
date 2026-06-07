@@ -95,11 +95,15 @@ function renderList() {
 
   songs.forEach((song, index) => {
     const li = document.createElement("li");
-    li.textContent = `${song.title} — ${song.artist}`;
+
+    // Wrap the text in a span so CSS can target it independently from the button.
+    const label = document.createElement("span");
+    label.textContent = `${song.title} — ${song.artist}`;
+    li.appendChild(label);
 
     const removeBtn = document.createElement("button");
     removeBtn.type        = "button";
-    removeBtn.textContent = "Remove";
+    removeBtn.textContent = "×"; // rendered as a cream × on green fill via CSS
     // The arrow function closes over `index`, so each button removes its own song.
     removeBtn.addEventListener("click", () => removeSong(index));
 
@@ -154,6 +158,9 @@ function applyScreen(screen) {
   inputSection.hidden      = screen !== 'input';
   comparisonSection.hidden = screen !== 'compare';
   resultsSection.hidden    = screen !== 'results';
+  // Toggle a class on <body> so CSS can paint the full viewport green and
+  // invert the header when the comparison screen is active.
+  document.body.classList.toggle('comparing', screen === 'compare');
 }
 
 // ── handleHashChange ──────────────────────────────────────────────────────────
