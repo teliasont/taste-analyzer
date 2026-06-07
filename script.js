@@ -274,25 +274,28 @@ Rules:
 - The situation must carry emotional stakes — not a neutral action, not a generic moment, not a metaphor
 - Do not use internal or psychological framing — no "the night you decide," no "when you finally realize," no emotional turning points described from the inside
 - Avoid vague placeholder language like "something," "the thing," or "it"
-- The question must be one sentence, maximum 25 words
+- The question must be one sentence, maximum 20 words
+- Do not use these situations or close variations of them: leaving a place, packing belongings, waiting outside a door, sitting in a parked car, watching something disappear in the distance. Find a genuinely different physical context
+- The situation does not need to be heavy or melancholic. Celebrations, high-energy moments, ordinary pleasures, and joyful situations are equally valid as long as the emotional stakes are real
+- Vary the type of situation — if it involves stillness, consider movement. If it involves an ending, consider a beginning or a middle
 
 Example of correct output:
+{
+  "reasoning": "Both songs build emotional weight through accumulation — detail layered on detail — until the listener is holding something heavier than they agreed to at the start.",
+  "question": "Which do you play at mile three when the hard part is still ahead?"
+}
+
+Example of incorrect output (wrong situation type — departure, melancholic, banned context):
 {
   "reasoning": "Both songs treat forward motion as the only honest response to something already lost.",
   "question": "Which do you play driving away from a place you're never going back to?"
 }
 
-Example of incorrect output (too psychological, not physical):
-{
-  "reasoning": "Both songs stage a moment of psychological rupture where the self must dismantle what it built.",
-  "question": "Which do you play the night you finally decide to burn down the version of yourself you built for someone else?"
-}
-
 Return a JSON object with two fields:
 - "reasoning": one specific sentence naming the shared quality — specific enough that it could not describe most other songs. No complex psychological framing, no vague generalities
 - "question": the comparison question only — must begin with "Which," the situation must carry emotional stakes, and it must visibly follow from the reasoning. No preamble, no setup, nothing before or after it
-
 Song A: ${songA.title} by ${songA.artist}
+
 Song B: ${songB.title} by ${songB.artist}`;
 
   try {
@@ -401,10 +404,9 @@ async function fetchReflection() {
   }).join('\n');
 
   const prompt = `You have observed a listener choose between song pairs. Here are their choices and the quality each pair shared:
-
 ${choiceLines}
 
-Write a 3–4 sentence personal reflection for this listener. Identify qualities that recur across multiple choices. Be specific about what their choices reveal — not just that they have preferences, but what kind of music asks something of them that they're willing to give. Write directly to the listener in second person, present tense. Prose only — no headers, no lists, no formatting.`;
+Write a 3 sentence reflection for this listener. Be direct and specific — name actual qualities you notice in the music they chose: energy levels, sonic texture, lyrical approach, emotional register, tempo, genre tendencies, or structural patterns where relevant. Say what their choices suggest about how they actually use music in their life — not poetically, but practically and specifically. Avoid abstract language, literary metaphors, and phrases like "sit with discomfort," "keep honest company," or "fuel or release." Do not use flowery or poetic language. Write directly to the listener in second person, present tense. Prose only, no formatting.`;
 
   try {
     const response = await fetch(CLAUDE_ENDPOINT, {
