@@ -24,10 +24,11 @@ const MIN_SONGS = 6; // minimum before the Start button becomes active
 let shuffledSongs    = []; // songs in a random order, fixed for the whole run
 let currentRound     = 0;  // 1-indexed; incremented before each round starts
 let totalRounds      = 0;  // Math.floor(songs.length / 2)
-let results          = []; // [{chosen, notChosen, reasoning}, ...]
+let results          = []; // [{chosen, notChosen, reasoning, question}, ...]
 let currentPairA     = null; // song currently shown on card A
 let currentPairB     = null; // song currently shown on card B
 let pendingReasoning = "";   // reasoning from the API response, stored until a card is tapped
+let pendingQuestion  = "";   // question displayed this round, stored until a card is tapped
 
 // ── DOM references ────────────────────────────────────────────────────────────
 // Grabbed once at startup so we're not querying the DOM on every interaction.
@@ -237,7 +238,7 @@ function loadNextRound() {
   cardBArtist.textContent = currentPairB.artist;
 
   showLoadingState();
-  fetchComparisonQuestion(currentPairA, currentPairB);
+  fetchComparisonQuestion(currentPairA, currentPairB, results.map(r => r.question).filter(Boolean));
 }
 
 // ── showLoadingState ──────────────────────────────────────────────────────────
@@ -256,7 +257,13 @@ function showLoadingState() {
 //
 // Falls back to a generic question if the fetch fails, so the user can still
 // step through all rounds without a hard error.
-async function fetchComparisonQuestion(songA, songB) {
+async function fetchComparisonQuestion(songA, songB, previousQuestions = []) {
+  // Build the optional context block listing questions already asked this session.
+  // Omitted entirely on round 1 when there is nothing to avoid yet.
+  const previousQuestionsBlock = previousQuestions.length > 0
+    ? `Previous questions asked in this session — do not repeat these situations or close variations of them:\n${previousQuestions.map(q => `- ${q}`).join('\n')}\n\n`
+    : '';
+
   const prompt = `You are helping a listener understand their own music taste through comparison. You have deep knowledge of music — not just genre, but emotional texture, structure, and what a song asks of its listener.
 
 You will receive two song titles and their artists.
@@ -265,7 +272,7 @@ Step 1: Identify one specific thing these two songs share beneath the surface. N
 
 Step 2: Using that shared quality, write a single comparison question. The situation in the question must be a direct consequence of the shared quality you identified — someone reading both fields should be able to see the connection clearly. Place the listener inside a specific physical situation that carries emotional stakes on its own — something is at risk, ending, beginning, or being decided in that moment. A neutral physical action with no stakes is not enough. Write in second person, present tense. Direct address only.
 
-Rules:
+${previousQuestionsBlock}Rules:
 - The question must begin with the word "Which"
 - Do not ask "which do you like more" directly
 - Do not reference genre, tempo, or release year
@@ -322,12 +329,14 @@ Song B: ${songB.title} by ${songB.artist}`;
     const parsed = JSON.parse(text);
 
     pendingReasoning = parsed.reasoning || "";
+    pendingQuestion  = parsed.question  || "";
     displayQuestion(parsed.question);
 
   } catch (error) {
     console.error("Could not fetch comparison question:", error);
     // Fallback so the round is still playable even without a live API response.
     pendingReasoning = "";
+    pendingQuestion  = "";
     displayQuestion("Which of these two songs speaks to you more right now?");
   }
 }
@@ -344,7 +353,7 @@ function displayQuestion(question) {
 // Records the user's choice. Shows the undo button after the first choice.
 // Either loads the next round or navigates to the results screen when done.
 function handleCardChoice(chosen, notChosen) {
-  results.push({ chosen, notChosen, reasoning: pendingReasoning });
+  results.push({ chosen, notChosen, reasoning: pendingReasoning, question: pendingQuestion });
   btnUndo.hidden = false; // reveal after the first choice is recorded
 
   if (currentRound < totalRounds) {
@@ -390,7 +399,9 @@ function handleUndo() {
   roundCounter.textContent = `Round ${currentRound} of ${totalRounds}`;  // 5. update counter
 
   showLoadingState();                               // disable cards while fetching
-  fetchComparisonQuestion(currentPairA, currentPairB); // 6. fresh question for this pair
+  // Pass questions from rounds still in results (after the pop) so the model
+  // avoids repeating situations from earlier rounds that the user kept.
+  fetchComparisonQuestion(currentPairA, currentPairB, results.map(r => r.question).filter(Boolean)); // 6.
 }
 
 // ── fetchReflection ───────────────────────────────────────────────────────────
@@ -453,6 +464,7 @@ function restartApp() {
   currentPairA     = null;
   currentPairB     = null;
   pendingReasoning = "";
+  pendingQuestion  = "";
 
   btnUndo.hidden             = true;
   reflectionStatus.hidden    = false;  // reset for the next run
