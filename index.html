@@ -61,6 +61,13 @@
           <p id="question-text"></p>
         </div>
 
+        <!-- Reasoning toggle — hidden during loading, shown once the question arrives.
+             Only displayed when the model returned a non-empty reasoning field. -->
+        <button id="btn-reasoning" type="button" hidden>See reasoning</button>
+
+        <!-- Reasoning text — hidden by default, toggled by the button above -->
+        <p id="reasoning-text" hidden></p>
+
         <!-- Song cards: each is a <button> so the entire card is clickable.
              Disabled during the loading state, enabled once the question arrives. -->
         <div id="song-cards">

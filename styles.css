@@ -422,6 +422,40 @@ section {
   opacity: 1;
 }
 
+/* 'See reasoning' toggle — plain cream text, no fill, no border.
+   Sits centered between the question box and the song cards. */
+#btn-reasoning {
+  display: block;
+  margin: calc(-1 * var(--space-3)) auto var(--space-4);
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-cream);
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  opacity: 0.45;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+#btn-reasoning:hover {
+  opacity: 0.9;
+}
+
+/* Reasoning text — italic, muted, centered. Visually secondary to the
+   question above without competing with the song cards below. */
+#reasoning-text {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: var(--text-small);
+  color: var(--color-cream);
+  opacity: 0.6;
+  text-align: center;
+  line-height: 1.6;
+  padding: 0 var(--space-6) var(--space-4);
+}
+
 
 /* ════════════════════════════════════════════════════════════════════════════
    RESULTS SCREEN

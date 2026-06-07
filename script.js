@@ -51,7 +51,9 @@ const cardAArtist  = document.getElementById("card-a-artist");
 const cardB        = document.getElementById("card-b");
 const cardBTitle   = document.getElementById("card-b-title");
 const cardBArtist  = document.getElementById("card-b-artist");
-const btnUndo      = document.getElementById("btn-undo");
+const btnUndo       = document.getElementById("btn-undo");
+const btnReasoning  = document.getElementById("btn-reasoning");
+const reasoningText = document.getElementById("reasoning-text");
 
 // Results screen elements
 const resultsSection   = document.getElementById("results-section");
@@ -248,6 +250,10 @@ function showLoadingState() {
   questionText.textContent = "Finding a connection...";
   cardA.disabled = true;
   cardB.disabled = true;
+  // Reset the reasoning toggle to its default hidden state for the new round.
+  btnReasoning.hidden      = true;
+  btnReasoning.textContent = "See reasoning";
+  reasoningText.hidden     = true;
 }
 
 // ── fetchComparisonQuestion ───────────────────────────────────────────────────
@@ -343,10 +349,24 @@ Song B: ${songB.title} by ${songB.artist}`;
 
 // ── displayQuestion ───────────────────────────────────────────────────────────
 // Shows the AI question and enables both cards so the user can make a choice.
+// Also reveals the reasoning toggle button if the model returned reasoning —
+// the button is omitted when pendingReasoning is empty (e.g. fallback round).
 function displayQuestion(question) {
   questionText.textContent = question;
   cardA.disabled = false;
   cardB.disabled = false;
+  if (pendingReasoning) {
+    reasoningText.textContent = pendingReasoning;
+    btnReasoning.hidden = false;
+  }
+}
+
+// ── toggleReasoning ───────────────────────────────────────────────────────────
+// Shows or hides the reasoning text panel and updates the button label to match.
+function toggleReasoning() {
+  const willShow       = reasoningText.hidden;
+  reasoningText.hidden = !willShow;
+  btnReasoning.textContent = willShow ? "Hide reasoning" : "See reasoning";
 }
 
 // ── handleCardChoice ──────────────────────────────────────────────────────────
@@ -493,6 +513,7 @@ function init() {
   cardB.addEventListener("click", () => handleCardChoice(currentPairB, currentPairA));
 
   btnUndo.addEventListener("click", handleUndo);
+  btnReasoning.addEventListener("click", toggleReasoning);
   btnRestart.addEventListener("click", restartApp);
 
   // hashchange fires when the user navigates with the browser's back/forward
